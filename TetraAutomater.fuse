@@ -1,0 +1,1190 @@
+--[[--
+----------------------------------------------------------------------
+MIT License
+
+Copyright (c) 2020 calvinsilly
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+----------------------------------------------------------------------
+--]]
+--
+
+FuRegisterClass("TetrahedralInterpolation", CT_Tool, {
+    REGS_Name = "Tetrahedral Interpolation",
+    REGS_Category = "Color",
+    REGS_OpIconString = "TI",
+    REGS_OpDescription = "",
+    REGS_Company = "Ember Light",
+    REG_Fuse_NoEdit = false,
+    REG_Fuse_NoReload = false,
+    REG_SupportsDoD = false,
+})
+
+ButtonState = 0
+
+ri = { r = 1, g = 0, b = 0 }
+ro = { r = 1, g = 0, b = 0 }
+
+gi = { r = 0, g = 1, b = 0 }
+go = { r = 0, g = 1, b = 0 }
+
+bi = { r = 0, g = 0, b = 1 }
+bo = { r = 0, g = 0, b = 1 }
+
+ci = { r = 0, g = 1, b = 1 }
+co = { r = 0, g = 1, b = 1 }
+
+mi = { r = 1, g = 0, b = 1 }
+mo = { r = 1, g = 0, b = 1 }
+
+yi = { r = 1, g = 1, b = 0 }
+yo = { r = 1, g = 1, b = 0 }
+
+function Create()
+    InMatch = self:AddInput("Match", "Match",
+        { LINKID_DataType = "Text", INPID_InputControl = "ButtonControl", INP_DoNotifyChanged = true, INP_External = false, })
+
+    --BLACK
+    self:BeginControlNest("Black", "BLACK", true, {})
+    InBlR = self:AddInput("", "BlR", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 0,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 0,
+        IC_ControlGroup = 9,
+    })
+
+    InBlG = self:AddInput("BlG", "BlG", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 0,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 1,
+        IC_ControlGroup = 9,
+    })
+
+    InBlB = self:AddInput("BlB", "BlB", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 0,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 2,
+        IC_ControlGroup = 9,
+    })
+    self:EndControlNest()
+
+    --WHITE
+    self:BeginControlNest("White", "WHITE", true, {})
+    InWR = self:AddInput("", "WR", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 1,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 0,
+        IC_ControlGroup = 8,
+    })
+
+    InWG = self:AddInput("WG", "WG", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 1,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 1,
+        IC_ControlGroup = 8,
+    })
+
+    InWB = self:AddInput("WB", "WB", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 1,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 2,
+        IC_ControlGroup = 8,
+    })
+    self:EndControlNest()
+
+    --RED
+    self:BeginControlNest("Red", "RED", true, {})
+
+    --INPUT RED
+    InRRI = self:AddInput("Input Red", "RRI", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 1,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 0,
+        IC_ControlGroup = 21,
+    })
+
+    InRGI = self:AddInput("RGI", "RGI", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 0,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 1,
+        IC_ControlGroup = 21,
+    })
+
+    InRBI = self:AddInput("RBI", "RBI", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 0,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 2,
+        IC_ControlGroup = 21,
+    })
+
+    --OUTPUT RED
+    InRRO = self:AddInput("Output Red", "RRO", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 1,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 0,
+        IC_ControlGroup = 22,
+    })
+
+    InRGO = self:AddInput("RGO", "RGO", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 0,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 1,
+        IC_ControlGroup = 22,
+    })
+
+    InRBO = self:AddInput("RBO", "RBO", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 0,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 2,
+        IC_ControlGroup = 22,
+    })
+
+    --FINAL RED
+    InRR = self:AddInput("Final Red", "RR", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 1,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 0,
+        IC_ControlGroup = 2,
+    })
+
+    InRG = self:AddInput("RG", "RG", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 0,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 1,
+        IC_ControlGroup = 2,
+    })
+
+    InRB = self:AddInput("RB", "RB", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 0,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 2,
+        IC_ControlGroup = 2,
+    })
+    self:EndControlNest()
+
+    --Green
+    self:BeginControlNest("Green", "GREEN", true, {})
+
+    --INPUT GREEN
+    InGRI = self:AddInput("Input Green", "GRI", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        LINKS_Name = "Green",
+        INP_Default = 0,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 0,
+        IC_ControlGroup = 31,
+    })
+
+    InGGI = self:AddInput("GGI", "GGI", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 1,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 1,
+        IC_ControlGroup = 31,
+    })
+
+    InGBI = self:AddInput("GBI", "GBI", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 0,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 2,
+        IC_ControlGroup = 31,
+    })
+
+    --OUTPUT GREEN
+    InGRO = self:AddInput("Output Green", "GRO", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        LINKS_Name = "Green",
+        INP_Default = 0,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 0,
+        IC_ControlGroup = 32,
+    })
+
+    InGGO = self:AddInput("GGO", "GGO", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 1,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 1,
+        IC_ControlGroup = 32,
+    })
+
+    InGBO = self:AddInput("GBO", "GBO", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 0,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 2,
+        IC_ControlGroup = 32,
+    })
+
+    --FINAL GREEN
+    InGR = self:AddInput("Final Green", "GR", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        LINKS_Name = "Green",
+        INP_Default = 0,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 0,
+        IC_ControlGroup = 3,
+    })
+
+    InGG = self:AddInput("GG", "GG", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 1,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 1,
+        IC_ControlGroup = 3,
+    })
+
+    InGB = self:AddInput("GB", "GB", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 0,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 2,
+        IC_ControlGroup = 3,
+    })
+    self:EndControlNest()
+
+    --Blue
+    self:BeginControlNest("Blue", "BLUE", true, {})
+
+    --INPUT BLUE
+    InBRI = self:AddInput("Input Blue", "BRI", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        LINKS_Name = "Blue",
+        INP_Default = 0,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 0,
+        IC_ControlGroup = 41,
+    })
+
+    InBGI = self:AddInput("BGI", "BGI", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 0,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 1,
+        IC_ControlGroup = 41,
+    })
+
+    InBBI = self:AddInput("BBI", "BBI", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 1,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 2,
+        IC_ControlGroup = 41,
+    })
+
+    --OUTPUT BLUE
+    InBRO = self:AddInput("Output Blue", "BRO", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        LINKS_Name = "Blue",
+        INP_Default = 0,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 0,
+        IC_ControlGroup = 42,
+    })
+
+    InBGO = self:AddInput("BGO", "BGO", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 0,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 1,
+        IC_ControlGroup = 42,
+    })
+
+    InBBO = self:AddInput("BBO", "BBO", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 1,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 2,
+        IC_ControlGroup = 42,
+    })
+
+    --FINAL BLUE
+    InBR = self:AddInput("Final Blue", "BR", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        LINKS_Name = "Blue",
+        INP_Default = 0,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 0,
+        IC_ControlGroup = 4,
+    })
+
+    InBG = self:AddInput("BG", "BG", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 0,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 1,
+        IC_ControlGroup = 4,
+    })
+
+    InBB = self:AddInput("BB", "BB", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 1,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 2,
+        IC_ControlGroup = 4,
+    })
+    self:EndControlNest()
+
+    --Cyan
+    self:BeginControlNest("Cyan", "CYAN", true, {})
+    --INPUT CYAN
+    InCRI = self:AddInput(" ", "CRI", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        LINKS_Name = "Cyan",
+        INP_Default = 0,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 0,
+        IC_ControlGroup = 51,
+    })
+
+    InCGI = self:AddInput("CGI", "CGI", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 1,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 1,
+        IC_ControlGroup = 51,
+    })
+
+    InCBI = self:AddInput("CBI", "CBI", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 1,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 2,
+        IC_ControlGroup = 51,
+    })
+
+    --OUTPUT CYAN
+    InCRO = self:AddInput(" ", "CRO", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        LINKS_Name = "Cyan",
+        INP_Default = 0,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 0,
+        IC_ControlGroup = 52,
+    })
+
+    InCGO = self:AddInput("CGO", "CGO", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 1,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 1,
+        IC_ControlGroup = 52,
+    })
+
+    InCBO = self:AddInput("CBO", "CBO", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 1,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 2,
+        IC_ControlGroup = 52,
+    })
+
+    --FINAL CYAN
+    InCR = self:AddInput("Final Cyan", "CR", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        LINKS_Name = "Cyan",
+        INP_Default = 0,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 0,
+        IC_ControlGroup = 5,
+    })
+
+    InCG = self:AddInput("CG", "CG", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 1,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 1,
+        IC_ControlGroup = 5,
+    })
+
+    InCB = self:AddInput("CB", "CB", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 1,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 2,
+        IC_ControlGroup = 5,
+    })
+    self:EndControlNest()
+
+    --Magenta
+    self:BeginControlNest("Magenta", "MAGENTA", true, {})
+    --INPUT MAGENTA
+    InMRI = self:AddInput(" ", "MRI", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        LINKS_Name = "Magenta",
+        INP_Default = 1,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 0,
+        IC_ControlGroup = 61,
+    })
+
+    InMGI = self:AddInput("MGI", "MGI", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 0,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 1,
+        IC_ControlGroup = 61,
+    })
+
+    InMBI = self:AddInput("MBI", "MBI", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 1,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 2,
+        IC_ControlGroup = 61,
+    })
+
+    --OUTPUT MAGENTA
+    InMRO = self:AddInput(" ", "MRO", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        LINKS_Name = "Magenta",
+        INP_Default = 1,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 0,
+        IC_ControlGroup = 62,
+    })
+
+    InMGO = self:AddInput("MGO", "MGO", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 0,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 1,
+        IC_ControlGroup = 62,
+    })
+
+    InMBO = self:AddInput("MBO", "MBO", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 1,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 2,
+        IC_ControlGroup = 62,
+    })
+
+    --FINAL MAGENTA
+    InMR = self:AddInput(" ", "MR", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        LINKS_Name = "Magenta",
+        INP_Default = 1,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 0,
+        IC_ControlGroup = 6,
+    })
+
+    InMG = self:AddInput("MG", "MG", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 0,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 1,
+        IC_ControlGroup = 6,
+    })
+
+    InMB = self:AddInput("MB", "MB", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 1,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 2,
+        IC_ControlGroup = 6,
+    })
+    self:EndControlNest()
+
+    --Yellow
+    self:BeginControlNest("Yellow", "YELLOW", true, {})
+    --INPUT YELLOW
+    InYRI = self:AddInput(" ", "YRI", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        LINKS_Name = "Yellow",
+        INP_Default = 1,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 0,
+        IC_ControlGroup = 71,
+    })
+
+    InYGI = self:AddInput("YGI", "YGI", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 1,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 1,
+        IC_ControlGroup = 71,
+    })
+
+    InYBI = self:AddInput("YBI", "YBI", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 0,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 2,
+        IC_ControlGroup = 71,
+    })
+
+    --OUTPUT YELLOW
+    InYRO = self:AddInput(" ", "YRO", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        LINKS_Name = "Yellow",
+        INP_Default = 1,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 0,
+        IC_ControlGroup = 72,
+    })
+
+    InYGO = self:AddInput("YGO", "YGO", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 1,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 1,
+        IC_ControlGroup = 72,
+    })
+
+    InYBO = self:AddInput("YBO", "YBO", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 0,
+        INP_DoNotifyChanged = true,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 2,
+        IC_ControlGroup = 72,
+    })
+
+    --FINAL YELLOW
+    InYR = self:AddInput(" ", "YR", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        LINKS_Name = "Yellow",
+        INP_Default = 1,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 0,
+        IC_ControlGroup = 7,
+    })
+
+    InYG = self:AddInput("YG", "YG", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 1,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 1,
+        IC_ControlGroup = 7,
+    })
+
+    InYB = self:AddInput("YB", "YB", {
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 0,
+        INPID_InputControl = "ColorControl",
+        CLRC_ColorSpace = 0,
+        LINKID_DataType = "Number",
+        IC_ControlID = 2,
+        IC_ControlGroup = 7,
+    })
+    self:EndControlNest()
+
+    InImage = self:AddInput("Input", "Input", {
+        LINKID_DataType = "Image",
+        LINK_Main = 1,
+    })
+
+    OutImage = self:AddOutput("Output", "Output", {
+        LINKID_DataType = "Image",
+        LINK_Main = 1,
+    })
+end
+
+function NotifyChanged(inp, param, time)
+    if inp == InMatch and param.Value == 1 then
+        local red = {}
+        red.r = (ri.b * yi.g - ro.r * yi.g - ri.g * yi.b + ro.r * yi.b + ri.g * yo.r - ri.b * yo.r) /
+            (ri.g * yi.r - ri.b * yi.r - ri.r * yi.g + ri.b * yi.g + ri.r * yi.b - ri.g * yi.b)
+        red.g = (ri.b * yi.g - ro.g * yi.g - ri.g * yi.b + ro.g * yi.b + ri.g * yo.g - ri.b * yo.g) /
+            (ri.g * yi.r - ri.b * yi.r - ri.r * yi.g + ri.b * yi.g + ri.r * yi.b - ri.g * yi.b)
+        red.b = (ri.b * yi.g - ro.b * yi.g - ri.g * yi.b + ro.b * yi.b + ri.g * yo.b - ri.b * yo.b) /
+            (ri.g * yi.r - ri.b * yi.r - ri.r * yi.g + ri.b * yi.g + ri.r * yi.b - ri.g * yi.b)
+
+        local green = {}
+        green.r = ((-gi.r * (ri.b - ro.r) * (yi.r - yi.g) + go.r * (ri.b * yi.r + ri.r * yi.g - ri.b * yi.g - ri.r * yi.b + ri.g * (-yi.r + yi.b)) + gi.r * (ri.r - ri.g) * (yi.b - yo.r) + gi.b * (-ro.r * yi.r - ri.r * yi.g + ro.r * yi.g + ri.g * (yi.r - yo.r) + ri.r * yo.r)) / ((gi.r - gi.g) * (ri.b * (-yi.r + yi.g) + ri.g * (yi.r - yi.b) + ri.r * (-yi.g + yi.b))))
+        green.g = (-gi.r * (ri.b - ro.g) * (yi.r - yi.g) + go.g * (ri.b * yi.r + ri.r * yi.g - ri.b * yi.g - ri.r * yi.b + ri.g * (-yi.r + yi.b)) + gi.r * (ri.r - ri.g) * (yi.b - yo.g) + gi.b * (-ro.g * yi.r - ri.r * yi.g + ro.g * yi.g + ri.g * (yi.r - yo.g) + ri.r * yo.g)) /
+            ((gi.r - gi.g) * (ri.b * (-yi.r + yi.g) + ri.g * (yi.r - yi.b) + ri.r * (-yi.g + yi.b)))
+        green.b = (-gi.r * (ri.b - ro.b) * (yi.r - yi.g) + go.b * (ri.b * yi.r + ri.r * yi.g - ri.b * yi.g - ri.r * yi.b + ri.g * (-yi.r + yi.b)) + gi.r * (ri.r - ri.g) * (yi.b - yo.b) + gi.b * (-ro.b * yi.r - ri.r * yi.g + ro.b * yi.g + ri.g * (yi.r - yo.b) + ri.r * yo.b)) /
+            ((gi.r - gi.g) * (ri.b * (-yi.r + yi.g) + ri.g * (yi.r - yi.b) + ri.r * (-yi.g + yi.b)))
+
+        local blue = {}
+        blue.r = (bi.g * ci.r - bo.r * ci.r - bi.r * ci.g + bo.r * ci.g + bi.r * co.r - bi.g * co.r) /
+            (bi.g * ci.r - bi.b * ci.r - bi.r * ci.g + bi.b * ci.g + bi.r * ci.b - bi.g * ci.b)
+        blue.g = (bi.g * ci.r - bo.g * ci.r - bi.r * ci.g + bo.g * ci.g + bi.r * co.g - bi.g * co.g) /
+            (bi.g * ci.r - bi.b * ci.r - bi.r * ci.g + bi.b * ci.g + bi.r * ci.b - bi.g * ci.b)
+        blue.b = (bi.g * ci.r - bo.b * ci.r - bi.r * ci.g + bo.b * ci.g + bi.r * co.b - bi.g * co.b) /
+            (bi.g * ci.r - bi.b * ci.r - bi.r * ci.g + bi.b * ci.g + bi.r * ci.b - bi.g * ci.b)
+
+        local cyan = {}
+        cyan.r = ((bi.r - bo.r) * (ci.g - ci.b) - (bi.g - bi.b) * (ci.r - co.r)) /
+            (bi.b * (ci.r - ci.g) + bi.r * (ci.g - ci.b) + bi.g * (-ci.r + ci.b))
+        cyan.g = ((bi.r - bo.g) * (ci.g - ci.b) - (bi.g - bi.b) * (ci.r - co.g)) /
+            (bi.b * (ci.r - ci.g) + bi.r * (ci.g - ci.b) + bi.g * (-ci.r + ci.b))
+        cyan.b = ((bi.r - bo.b) * (ci.g - ci.b) - (bi.g - bi.b) * (ci.r - co.b)) /
+            (bi.b * (ci.r - ci.g) + bi.r * (ci.g - ci.b) + bi.g * (-ci.r + ci.b))
+
+        local magenta = {}
+        magenta.r = (mi.g * (-ri.b * yi.r - ri.r * yi.g + ri.b * yi.g + ri.g * (yi.r - yi.b) + ri.r * yi.b) + mo.r * (-ri.g * yi.r + ri.b * yi.r + ri.r * yi.g - ri.b * yi.g - ri.r * yi.b + ri.g * yi.b) + (mi.r - mi.b) * (ri.b * yi.g - ro.r * yi.g - ri.g * yi.b + ro.r * yi.b + ri.g * yo.r - ri.b * yo.r)) /
+            ((mi.g - mi.b) * (ri.b * (-yi.r + yi.g) + ri.g * (yi.r - yi.b) + ri.r * (-yi.g + yi.b)))
+        magenta.g = (mi.g - mo.g + ((-mi.r + mi.b) * (ro.g * (yi.g - yi.b) + ri.g * (yi.b - yo.g) + ri.b * (-yi.g + yo.g))) / (ri.b * (-yi.r + yi.g) + ri.g * (yi.r - yi.b) + ri.r * (-yi.g + yi.b))) /
+            (mi.g - mi.b)
+        magenta.b = (mi.g - mo.b + ((-mi.r + mi.b) * (ro.b * (yi.g - yi.b) + ri.g * (yi.b - yo.b) + ri.b * (-yi.g + yo.b))) / (ri.b * (-yi.r + yi.g) + ri.g * (yi.r - yi.b) + ri.r * (-yi.g + yi.b))) /
+            (mi.g - mi.b)
+
+        local yellow = {}
+        yellow.r = ((ri.b - ro.r) * (yi.r - yi.g) - (ri.r - ri.g) * (yi.b - yo.r)) /
+            (ri.b * (yi.r - yi.g) + ri.r * (yi.g - yi.b) + ri.g * (-yi.r + yi.b))
+        yellow.g = ((ri.b - ro.g) * (yi.r - yi.g) - (ri.r - ri.g) * (yi.b - yo.g)) /
+            (ri.b * (yi.r - yi.g) + ri.r * (yi.g - yi.b) + ri.g * (-yi.r + yi.b))
+        yellow.b = ((ri.b - ro.b) * (yi.r - yi.g) - (ri.r - ri.g) * (yi.b - yo.b)) /
+            (ri.b * (yi.r - yi.g) + ri.r * (yi.g - yi.b) + ri.g * (-yi.r + yi.b))
+        print(red.b)
+        print(red.g)
+        print(red.b)
+
+        -- Set the values for the input red triplet
+        InRR:SetSource(Number(red.r), 0)
+        InRG:SetSource(Number(red.g), 0)
+        InRB:SetSource(Number(red.b), 0)
+
+        -- Set the values for the input green triplet
+        InGR:SetSource(Number(green.r), 0)
+        InGG:SetSource(Number(green.g), 0)
+        InGB:SetSource(Number(green.b), 0)
+
+        -- Set the values for the input blue triplet
+        InBR:SetSource(Number(blue.r), 0)
+        InBG:SetSource(Number(blue.g), 0)
+        InBB:SetSource(Number(blue.b), 0)
+
+        -- Set the values for the input cyan triplet
+        InCR:SetSource(Number(cyan.r), 0)
+        InCG:SetSource(Number(cyan.g), 0)
+        InCB:SetSource(Number(cyan.b), 0)
+
+        -- Set the values for the input magenta triplet
+        InMR:SetSource(Number(magenta.r), 0)
+        InMG:SetSource(Number(magenta.g), 0)
+        InMB:SetSource(Number(magenta.b), 0)
+
+        -- Set the values for the input yellow triplet
+        InYR:SetSource(Number(yellow.r), 0)
+        InYG:SetSource(Number(yellow.g), 0)
+        InYB:SetSource(Number(yellow.b), 0)
+
+
+        --Input Red
+    elseif inp == InRRI then
+        ri.r = param.Value
+    elseif inp == InRGI then
+        ri.g = param.Value
+    elseif inp == InRBI then
+        ri.b = param.Value
+
+        --Output Red
+    elseif inp == InRRO then
+        ro.r = param.Value
+    elseif inp == InRGO then
+        ro.g = param.Value
+    elseif inp == InRBO then
+        ro.b = param.Value
+
+        -- Input Green
+    elseif inp == InGRI then
+        gi.r = param.Value
+    elseif inp == InGGI then
+        gi.g = param.Value
+    elseif inp == InGBI then
+        gi.b = param.Value
+        -- Output Green
+    elseif inp == InGRO then
+        go.r = param.Value
+    elseif inp == InGGO then
+        go.g = param.Value
+    elseif inp == InGBO then
+        go.b = param.Value
+
+        -- Input Blue
+    elseif inp == InBRI then
+        bi.r = param.Value
+    elseif inp == InBGI then
+        bi.g = param.Value
+    elseif inp == InBBI then
+        bi.b = param.Value
+        -- Output Blue
+    elseif inp == InBRO then
+        bo.r = param.Value
+    elseif inp == InBGO then
+        bo.g = param.Value
+    elseif inp == InBBO then
+        bo.b = param.Value
+
+        -- Input Cyan
+    elseif inp == InCRI then
+        ci.r = param.Value
+    elseif inp == InCGI then
+        ci.g = param.Value
+    elseif inp == InCBI then
+        ci.b = param.Value
+        -- Output Cyan
+    elseif inp == InCRO then
+        co.r = param.Value
+    elseif inp == InCGO then
+        co.g = param.Value
+    elseif inp == InCBO then
+        co.b = param.Value
+
+        -- Input Magenta
+    elseif inp == InMRI then
+        mi.r = param.Value
+    elseif inp == InMGI then
+        mi.g = param.Value
+    elseif inp == InMBI then
+        mi.b = param.Value
+        -- Output Magenta
+    elseif inp == InMRO then
+        mo.r = param.Value
+    elseif inp == InMGO then
+        mo.g = param.Value
+    elseif inp == InMBO then
+        mo.b = param.Value
+
+        -- Input Yellow
+    elseif inp == InYRI then
+        yi.r = param.Value
+    elseif inp == InYGI then
+        yi.g = param.Value
+    elseif inp == InYBI then
+        yi.b = param.Value
+        -- Output Yellow
+    elseif inp == InYRO then
+        yo.r = param.Value
+    elseif inp == InYGO then
+        yo.g = param.Value
+    elseif inp == InYBO then
+        yo.b = param.Value
+    end
+
+
+    -- ri = {r=InRRI:GetValue(req).Value, g=InRGI:GetValue(req).Value, b=InRBI:GetValue(req).Value,}
+    -- ro = {r=InRRO:GetValue(req).Value, g=InRGO:GetValue(req).Value, b=InRBO:GetValue(req).Value,}
+
+    -- gi = {r=InGRI:GetValue(req).Value, g=InGGI:GetValue(req).Value, b=InGBI:GetValue(req).Value}
+    -- go = {r=InGRO:GetValue(req).Value, g=InGGO:GetValue(req).Value, b=InGBO:GetValue(req).Value}
+
+    -- bi = {r=InBRI:GetValue(req).Value, g=InBGI:GetValue(req).Value, b=InBBI:GetValue(req).Value}
+    -- bo = {r=InBRO:GetValue(req).Value, g=InBGO:GetValue(req).Value, b=InBBO:GetValue(req).Value}
+
+    -- ci = {r=InCRI:GetValue(req).Value, g=InCGI:GetValue(req).Value, b=InCBI:GetValue(req).Value}
+    -- co = {r=InCRO:GetValue(req).Value, g=InCGO:GetValue(req).Value, b=InCBO:GetValue(req).Value}
+
+    -- yi = {r=InYRI:GetValue(req).Value, g=InYGI:GetValue(req).Value, b=InYBI:GetValue(req).Value}
+    -- yo = {r=InYRO:GetValue(req).Value, g=InYGO:GetValue(req).Value, b=InYBO:GetValue(req).Value}
+
+    -- mi = {r=InMRI:GetValue(req).Value, g=InMGI:GetValue(req).Value, b=InMBI:GetValue(req).Value}
+    -- mo = {r=InMRO:GetValue(req).Value, g=InMGO:GetValue(req).Value, b=InMBO:GetValue(req).Value}
+end
+
+function Process(req)
+    local src = InImage:GetValue(req)
+    --local dst = Image({IMG_Like = src})
+    local dst = Image { IMG_Like = src, IMG_DeferAlloc = true }
+
+    if not req:IsPreCalc() then
+        ---====  PIXEL PROCESS ===---
+
+        --This calls on our kernel to process the image we created.
+        local node = DVIPComputeNode(req, "SolidTIKernel", SolidTIKernel, "SolidTIParams", SolidTIParams)
+
+        local params = node:GetParamBlock(SolidTIParams)
+        --This gets the values of our sliders from the control panel.
+        params.blk[0] = InBlR:GetValue(req).Value
+        params.blk[1] = InBlG:GetValue(req).Value
+        params.blk[2] = InBlB:GetValue(req).Value
+
+        params.wht[0] = InWR:GetValue(req).Value
+        params.wht[1] = InWG:GetValue(req).Value
+        params.wht[2] = InWB:GetValue(req).Value
+
+        params.red[0] = InRR:GetValue(req).Value
+        params.red[1] = InRG:GetValue(req).Value
+        params.red[2] = InRB:GetValue(req).Value
+
+        params.grn[0] = InGR:GetValue(req).Value
+        params.grn[1] = InGG:GetValue(req).Value
+        params.grn[2] = InGB:GetValue(req).Value
+
+        params.blu[0] = InBR:GetValue(req).Value
+        params.blu[1] = InBG:GetValue(req).Value
+        params.blu[2] = InBB:GetValue(req).Value
+
+        params.cyn[0] = InCR:GetValue(req).Value
+        params.cyn[1] = InCG:GetValue(req).Value
+        params.cyn[2] = InCB:GetValue(req).Value
+
+        params.mag[0] = InMR:GetValue(req).Value
+        params.mag[1] = InMG:GetValue(req).Value
+        params.mag[2] = InMB:GetValue(req).Value
+
+        params.yel[0] = InYR:GetValue(req).Value
+        params.yel[1] = InYG:GetValue(req).Value
+        params.yel[2] = InYB:GetValue(req).Value
+
+        params.srcCompOrder = src:IsMask() and 1 or 15
+
+        node:SetParamBlock(params)
+
+        node:AddInput("src", src)
+        node:AddOutput("dst", dst)
+
+        local ok = node:RunSession(req)
+
+        if not ok then
+            dst = nil
+        end
+    end
+
+    OutImage:Set(req, dst)
+end
+
+--These are the parameters that we need access to in our kernel.
+SolidTIParams = [[
+    int srcCompOrder;
+    float blk[3];
+    float wht[3];
+    float red[3];
+    float grn[3];
+    float blu[3];
+    float cyn[3];
+    float mag[3];
+    float yel[3];
+]]
+
+--This is the GPU kernel, all of the image algorithms happen here.
+SolidTIKernel = [[
+    #define bl_R params->blk[0]
+    #define bl_G params->blk[1]
+    #define bl_B params->blk[2]
+
+    #define wh_R params->wht[0]
+    #define wh_G params->wht[1]
+    #define wh_B params->wht[2]
+
+    #define r_R params->red[0]
+    #define r_G params->red[1]
+    #define r_B params->red[2]
+
+    #define g_R params->grn[0]
+    #define g_G params->grn[1]
+    #define g_B params->grn[2]
+
+    #define b_R params->blu[0]
+    #define b_G params->blu[1]
+    #define b_B params->blu[2]
+
+    #define c_R params->cyn[0]
+    #define c_G params->cyn[1]
+    #define c_B params->cyn[2]
+
+    #define m_R params->mag[0]
+    #define m_G params->mag[1]
+    #define m_B params->mag[2]
+
+    #define y_R params->yel[0]
+    #define y_G params->yel[1]
+    #define y_B params->yel[2]
+
+    #define make_float3 to_float3
+
+    __KERNEL__ void SolidTIKernel(
+        __CONSTANTREF__ SolidTIParams *params,
+        __TEXTURE2D__ src,
+        __TEXTURE2D_WRITE__ dst
+    )
+    {
+        DEFINE_KERNEL_ITERATORS_XY(x, y);
+        float4 In = _tex2DVecN(src, x, y, params->srcCompOrder);
+        float3 rgb;
+
+        const float r = In.x;
+        const float g = In.y;
+        const float b = In.z;
+
+        float3 blk = make_float3(bl_R, bl_G, bl_B);
+        float3 wht = make_float3(wh_R, wh_G, wh_B);
+        float3 red = make_float3(r_R, r_G, r_B);
+        float3 grn = make_float3(g_R, g_G, g_B);
+        float3 blu = make_float3(b_R, b_G, b_B);
+        float3 cyn = make_float3(c_R, c_G, c_B);
+        float3 mag = make_float3(m_R, m_G, m_B);
+        float3 yel = make_float3(y_R, y_G, y_B);
+
+
+        if (r>g) {
+            // r>g>b
+            if (g>b) {
+                rgb = r*(red-blk)+blk + g*(yel-red) + b*(wht-yel);
+            }
+            // r>b>g
+            else if (r>b) {
+                rgb = r*(red-blk)+blk + g*(wht-mag) + b*(mag-red);
+            }
+            // b>r>g
+            else {
+                rgb = r*(mag-blu) + g*(wht-mag) + b*(blu-blk)+blk;
+            }
+        } else {
+            // b>g>r
+            if (b>g) {
+                rgb = r*(wht-cyn) + g*(cyn-blu) + b*(blu-blk)+blk;
+            }
+            // g>b>r
+            else if (b>r) {
+                rgb = r*(wht-cyn) + g*(grn-blk)+blk + b*(cyn-grn);
+            }
+            // g>r>b
+            else {
+                rgb = r*(yel-grn) + g*(grn-blk)+blk + b*(wht-yel);
+            }
+        }
+
+        _tex2DVec4Write(dst, x, y, to_float4(rgb.x, rgb.y, rgb.z, In.w));
+    }
+]]
