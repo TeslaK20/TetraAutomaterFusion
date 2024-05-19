@@ -36,8 +36,6 @@ FuRegisterClass("TetrahedralInterpolation", CT_Tool, {
     REG_SupportsDoD = false,
 })
 
-ButtonState = 0
-
 ri = { r = 1, g = 0, b = 0 }
 ro = { r = 1, g = 0, b = 0 }
 
