@@ -873,9 +873,6 @@ function NotifyChanged(inp, param, time)
             (ri.b * (yi.r - yi.g) + ri.r * (yi.g - yi.b) + ri.g * (-yi.r + yi.b))
         yellow.b = ((ri.b - ro.b) * (yi.r - yi.g) - (ri.r - ri.g) * (yi.b - yo.b)) /
             (ri.b * (yi.r - yi.g) + ri.r * (yi.g - yi.b) + ri.g * (-yi.r + yi.b))
-        print(red.b)
-        print(red.g)
-        print(red.b)
 
         -- Set the values for the input red triplet
         InRR:SetSource(Number(red.r), 0)
@@ -1001,23 +998,7 @@ function NotifyChanged(inp, param, time)
     end
 
 
-    -- ri = {r=InRRI:GetValue(req).Value, g=InRGI:GetValue(req).Value, b=InRBI:GetValue(req).Value,}
-    -- ro = {r=InRRO:GetValue(req).Value, g=InRGO:GetValue(req).Value, b=InRBO:GetValue(req).Value,}
 
-    -- gi = {r=InGRI:GetValue(req).Value, g=InGGI:GetValue(req).Value, b=InGBI:GetValue(req).Value}
-    -- go = {r=InGRO:GetValue(req).Value, g=InGGO:GetValue(req).Value, b=InGBO:GetValue(req).Value}
-
-    -- bi = {r=InBRI:GetValue(req).Value, g=InBGI:GetValue(req).Value, b=InBBI:GetValue(req).Value}
-    -- bo = {r=InBRO:GetValue(req).Value, g=InBGO:GetValue(req).Value, b=InBBO:GetValue(req).Value}
-
-    -- ci = {r=InCRI:GetValue(req).Value, g=InCGI:GetValue(req).Value, b=InCBI:GetValue(req).Value}
-    -- co = {r=InCRO:GetValue(req).Value, g=InCGO:GetValue(req).Value, b=InCBO:GetValue(req).Value}
-
-    -- yi = {r=InYRI:GetValue(req).Value, g=InYGI:GetValue(req).Value, b=InYBI:GetValue(req).Value}
-    -- yo = {r=InYRO:GetValue(req).Value, g=InYGO:GetValue(req).Value, b=InYBO:GetValue(req).Value}
-
-    -- mi = {r=InMRI:GetValue(req).Value, g=InMGI:GetValue(req).Value, b=InMBI:GetValue(req).Value}
-    -- mo = {r=InMRO:GetValue(req).Value, g=InMGO:GetValue(req).Value, b=InMBO:GetValue(req).Value}
 end
 
 function Process(req)
