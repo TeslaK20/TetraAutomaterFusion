@@ -874,32 +874,32 @@ function NotifyChanged(inp, param, time)
         yellow.b = ((ri.b - ro.b) * (yi.r - yi.g) - (ri.r - ri.g) * (yi.b - yo.b)) /
             (ri.b * (yi.r - yi.g) + ri.r * (yi.g - yi.b) + ri.g * (-yi.r + yi.b))
 
-        -- Set the values for the input red triplet
+        -- Set the values for the red triplet
         InRR:SetSource(Number(red.r), 0)
         InRG:SetSource(Number(red.g), 0)
         InRB:SetSource(Number(red.b), 0)
 
-        -- Set the values for the input green triplet
+        -- Set the values for the green triplet
         InGR:SetSource(Number(green.r), 0)
         InGG:SetSource(Number(green.g), 0)
         InGB:SetSource(Number(green.b), 0)
 
-        -- Set the values for the input blue triplet
+        -- Set the values for the blue triplet
         InBR:SetSource(Number(blue.r), 0)
         InBG:SetSource(Number(blue.g), 0)
         InBB:SetSource(Number(blue.b), 0)
 
-        -- Set the values for the input cyan triplet
+        -- Set the values for the cyan triplet
         InCR:SetSource(Number(cyan.r), 0)
         InCG:SetSource(Number(cyan.g), 0)
         InCB:SetSource(Number(cyan.b), 0)
 
-        -- Set the values for the input magenta triplet
+        -- Set the values for the magenta triplet
         InMR:SetSource(Number(magenta.r), 0)
         InMG:SetSource(Number(magenta.g), 0)
         InMB:SetSource(Number(magenta.b), 0)
 
-        -- Set the values for the input yellow triplet
+        -- Set the values for the yellow triplet
         InYR:SetSource(Number(yellow.r), 0)
         InYG:SetSource(Number(yellow.g), 0)
         InYB:SetSource(Number(yellow.b), 0)
